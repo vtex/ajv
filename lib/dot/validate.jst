@@ -1,6 +1,7 @@
 {{# def.definitions }}
 {{# def.errors }}
 {{# def.defaults }}
+{{# def.examples }}
 {{# def.coerce }}
 
 {{ /**
@@ -199,6 +200,11 @@
             {{# def.defaultProperties }}
           {{?? $rulesGroup.type == 'array' && Array.isArray(it.schema.items) }}
             {{# def.defaultItems }}
+          {{?}}
+        {{?}}
+        {{? it.opts.useExamples }}
+          {{? $rulesGroup.type == 'object' && it.schema.properties }}
+            {{# def.examplesProperties }}
           {{?}}
         {{?}}
         {{~ $rulesGroup.rules:$rule }}

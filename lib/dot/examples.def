@@ -1,0 +1,20 @@
+{{## def.assignExamples:
+  {{? !it.compositeRule }}
+    if ({{=$passData}} == null)
+      {{=$passData}} = {{= JSON.stringify($sch.examples[0]) }};
+  {{?}}
+#}}
+
+
+{{## def.examplesProperties:
+  {{
+    var $schema = it.schema.properties
+      , $schemaKeys = Object.keys($schema); }}
+  {{~ $schemaKeys:$propertyKey }}
+    {{ var $sch = $schema[$propertyKey]; }}
+    {{? $sch.examples !== undefined && Array.isArray($sch.examples) }}
+      {{ var $passData = $data + it.util.getProperty($propertyKey); }}
+      {{# def.assignExamples }}
+    {{?}}
+  {{~}}
+#}}
