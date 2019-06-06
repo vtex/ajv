@@ -1,0 +1,23 @@
+{{## def.assignData:
+  {{? !it.compositeRule }}
+    if ({{=$passData}} != null) {
+      var validData = {
+        key: {{= JSON.stringify($propertyKey) }}, value: {{= $passData }}, ...{{= JSON.stringify($sch) }} };
+      validate.validatedData = (validate.validatedData || []).concat(validData);
+    }
+  {{?}}
+#}}
+
+
+{{## def.storeValidSchema:
+  {{
+    var $schema = it.schema.properties
+      , $schemaKeys = Object.keys($schema); }}
+  {{~ $schemaKeys:$propertyKey }}
+    {{ var $sch = $schema[$propertyKey]; }}
+    {{? $sch != null }}
+      {{ var $passData = $data + it.util.getProperty($propertyKey); }}
+      {{# def.assignData }}
+    {{?}}
+  {{~}}
+#}}

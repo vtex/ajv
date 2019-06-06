@@ -160,6 +160,7 @@ declare namespace ajv {
     root?: ValidateFunction | object;
     $async?: true;
     source?: object;
+    validatedData?: Array<any>;
   }
 
   interface Options {
@@ -180,6 +181,7 @@ declare namespace ajv {
     removeAdditional?: boolean | 'all' | 'failing';
     useDefaults?: boolean | 'shared';
     useExamples?: boolean;
+    shouldStoreValidSchema?: boolean;
     coerceTypes?: boolean | 'array';
     strictDefaults?: boolean | 'log';
     strictKeywords?: boolean | 'log';
