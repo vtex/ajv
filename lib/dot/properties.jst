@@ -131,6 +131,7 @@ var {{=$nextValid}} = true;
 {{?}}
 
 {{ var $useDefaults = it.opts.useDefaults && !it.compositeRule; }}
+{{ var $shouldStoreValidSchema = it.opts.shouldStoreValidSchema && !it.compositeRule; }}
 
 {{? $schemaKeys.length }}
   {{~ $schemaKeys:$propertyKey }}
@@ -147,6 +148,10 @@ var {{=$nextValid}} = true;
         $it.errorPath = it.util.getPath(it.errorPath, $propertyKey, it.opts.jsonPointers);
         $it.dataPathArr[$dataNxt] = it.util.toQuotedString($propertyKey);
       }}
+
+      {{? $shouldStoreValidSchema }}
+        {{# def.storeValidSchema }}
+      {{?}}
 
       {{# def.generateSubschemaCode }}
 

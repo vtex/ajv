@@ -207,11 +207,6 @@
             {{# def.examplesProperties }}
           {{?}}
         {{?}}
-        {{? it.opts.shouldStoreValidSchema }}
-          {{? $rulesGroup.type == 'object' && it.schema.properties }}
-            {{# def.storeValidSchema }}
-          {{?}}
-        {{?}}
         {{~ $rulesGroup.rules:$rule }}
           {{? $shouldUseRule($rule) }}
             {{ var $code = $rule.code(it, $rule.keyword, $rulesGroup.type); }}

@@ -197,3 +197,22 @@
 {{## def.isOwnProperty:
   Object.prototype.hasOwnProperty.call({{=$data}}, '{{=it.util.escapeQuotes($propertyKey)}}')
 #}}
+
+
+{{## def.storeValidSchema:
+  {{? $sch != null }}
+    {{# def.assignData }}
+  {{?}}
+#}}
+
+{{## def.assignData:
+  {{? !it.compositeRule }}
+    if ({{=$passData}} != null) {
+      {{ var $dataPath =  $it.dataPathArr.slice(1).map(v => v.split('\'').join('') ); }}
+      var validData = {
+        key: {{= JSON.stringify($propertyKey) }}, value: {{= $passData }}, dataPath: {{= JSON.stringify($dataPath) }},
+        ...{{= JSON.stringify($sch) }} };
+      validate.validatedData = (validate.validatedData || []).concat(validData);
+    }
+  {{?}}
+#}}

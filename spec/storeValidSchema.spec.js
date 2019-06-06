@@ -32,9 +32,9 @@ describe('storeValidData options', function() {
       validate(data).should.equal(true);
       data.should.eql({ foo: 'abc', bar: 1, baz: 'test' });
       validate.validatedData.should.eql([
-        { key: 'foo', value: 'abc', type: 'string', examples: ['abc'] },
-        { key: 'bar', value: 1, type: 'number', default: 1, examples: [2] },
-        { key: 'baz', value: 'test', type: 'string' },
+        { key: 'foo', value: 'abc', type: 'string', examples: ['abc'], dataPath: ["foo"] },
+        { key: 'bar', value: 1, type: 'number', default: 1, examples: [2], dataPath: ["bar"] },
+        { key: 'baz', value: 'test', type: 'string', dataPath: ["baz"] },
       ]);
     }
   });
@@ -63,7 +63,41 @@ describe('storeValidData options', function() {
 
       validate(data).should.equal(true);
       data.should.eql({ foo: 'abc' });
-      validate.validatedData.should.eql([{ key: 'foo', value: 'abc', type: 'string', examples: ['abc'], format: 'IOMessage' }]);
+      validate.validatedData.should.eql([
+        { key: 'foo', value: 'abc', type: 'string', examples: ['abc'], format: 'IOMessage', dataPath: ["foo"] }
+      ]);
+    }
+  });
+
+  it('should store datapath of nested properties', function() {
+    test(
+      new Ajv({ allErrors: true, useDefaults: true, useExamples: true, shouldStoreValidSchema: true })
+      .addFormat('IOMessage', {
+        type: 'string',
+        validate: function(x) {
+          return x.length > 0;
+        },
+      })
+    );
+
+    function test(ajv) {
+      var schema = {
+        properties: {
+          foo: { properties: {
+            bar: { type: 'string', examples: ['abc'], format: 'IOMessage' }
+          } },
+        },
+        required: ['foo'],
+      };
+
+      var validate = ajv.compile(schema);
+      var data = {'foo': {} };
+
+      validate(data).should.equal(true);
+      data.should.eql({ foo: { bar: 'abc' }});
+      validate.validatedData.should.eql([
+        { key: 'foo', value: {bar: 'abc'}, properties: { bar: { type: 'string', examples: ['abc'], format: 'IOMessage' } }, dataPath: ['foo'] },
+        { key: 'bar', value: 'abc', type: 'string', examples: ['abc'], format: 'IOMessage', dataPath: ['foo', 'bar'] }]);
     }
   });
 });
