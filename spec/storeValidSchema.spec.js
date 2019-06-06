@@ -100,4 +100,63 @@ describe('storeValidData options', function() {
         { key: 'bar', value: 'abc', type: 'string', examples: ['abc'], format: 'IOMessage', dataPath: ['foo', 'bar'] }]);
     }
   });
+
+  it('should store datapath of dependencies properties', function() {
+    test(
+      new Ajv({ allErrors: true, useDefaults: true, useExamples: true, shouldStoreValidSchema: true })
+      .addFormat('IOMessage', {
+        type: 'string',
+        validate: function(x) {
+          return x.length > 0;
+        },
+      })
+    );
+
+    function test(ajv) {
+      var schema = {
+        dependencies: {
+          foo: {
+            oneOf:[
+              {
+                properties: {
+                  foo: {
+                    enum: ['0']
+                  },
+                  bar: { type: 'string', default: 'abc', format: 'IOMessage' }
+                },
+                required: ['bar']
+              },
+              {
+                properties: {
+                  foo: {
+                    enum: ['1']
+                  },
+                  baz: { type: 'string', default: 'abc', format: 'IOMessage' }
+                }
+              }
+            ]
+          }
+        },
+        properties: {
+          foo: {
+            enum: ['0', '1']
+          }
+        },
+        required: ['foo']
+      };
+
+      var validate = ajv.compile(schema);
+      var data = {foo: '0', bar: 'abc' };
+
+      validate(data).should.equal(true);
+      data.should.eql({ foo: '0', bar: 'abc' });
+      validate.validatedData.should.eql([
+        { key: 'foo', value: '0', enum: ['0'], dataPath: ['foo'] },
+        { key: 'bar', value: 'abc', type: 'string', default: 'abc', format: 'IOMessage', dataPath: ['bar'] },
+        { key: 'foo', value: '0', enum: ['1'], dataPath: ['foo'] },
+        { key: 'foo', value: '0', enum: ['0', '1'], dataPath: ['foo'] },
+      ]
+      );
+    }
+  });
 });

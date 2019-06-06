@@ -131,7 +131,7 @@ var {{=$nextValid}} = true;
 {{?}}
 
 {{ var $useDefaults = it.opts.useDefaults && !it.compositeRule; }}
-{{ var $shouldStoreValidSchema = it.opts.shouldStoreValidSchema && !it.compositeRule; }}
+{{ var $shouldStoreValidSchema = it.opts.shouldStoreValidSchema; }}
 
 {{? $schemaKeys.length }}
   {{~ $schemaKeys:$propertyKey }}
