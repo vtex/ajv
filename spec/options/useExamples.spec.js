@@ -21,21 +21,22 @@ describe('useExamples options', function() {
           baz: { type: 'boolean', default: false },
           nil: { type: 'null', default: null },
           obj: { type: 'object', default: {} },
-          arr: { type: 'array', default: [] }
+          arr: { type: 'array', default: [] },
+          empty: { type: 'string', examples: ['abc'] },
         },
-        required: ['foo', 'bar', 'baz', 'nil', 'obj', 'arr'],
+        required: ['foo', 'bar', 'baz', 'nil', 'obj', 'arr', 'empty'],
         minProperties: 6
       };
 
       var validate = ajv.compile(schema);
 
-      var data = {};
+      var data = {empty: ''};
       validate(data) .should.equal(true);
-      data .should.eql({ foo: 'abc', bar: 1, baz: false, nil: null, obj: {}, arr:[] });
+      data .should.eql({ foo: 'abc', bar: 1, baz: false, nil: null, obj: {}, arr:[], empty: '' });
 
-      data = { foo: 'foo', bar: 2, obj: { test: true } };
+      data = { foo: 'foo', bar: 2, obj: { test: true }, empty: '' };
       validate(data) .should.equal(true);
-      data .should.eql({ foo: 'foo', bar: 2, baz: false, nil: null, obj: { test: true }, arr:[] });
+      data .should.eql({ foo: 'foo', bar: 2, baz: false, nil: null, obj: { test: true }, arr:[], empty: '' });
     }
   });
 });

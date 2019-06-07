@@ -1,7 +1,8 @@
 {{## def.assignExamples:
   {{? !it.compositeRule }}
-    if ({{=$passData}} == null)
+    if ({{=$passData}} == null){
       {{=$passData}} = {{= JSON.stringify($sch.examples[0]) }};
+    }
   {{?}}
 #}}
 
