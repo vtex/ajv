@@ -207,9 +207,9 @@
 
 {{## def.assignData:
   if ({{=$passData}} != null) {
-    {{ var $dataPath =  $it.dataPathArr.slice(1).map(v => v.split('\'').join('') ); }}
+    {{ var $dataPath = $it.dataPathArr.slice(1); }}
     var validData = {
-      key: {{= JSON.stringify($propertyKey) }}, value: {{= $passData }}, dataPath: {{= JSON.stringify($dataPath) }},
+      key: {{= JSON.stringify($propertyKey) }}, value: {{= $passData }}, dataPath: [{{= $dataPath }} ],
       ...{{= JSON.stringify($sch) }} };
     validate.validatedData = (validate.validatedData || []).concat(validData);
   }
