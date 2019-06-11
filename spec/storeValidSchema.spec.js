@@ -159,4 +159,54 @@ describe('storeValidData options', function() {
       );
     }
   });
+
+  it('should store datapath of arrays with integer indexes', function() {
+    test(
+      new Ajv({ allErrors: true, useDefaults: true, useExamples: true, shouldStoreValidSchema: true })
+      .addFormat('IOMessage', {
+        type: 'string',
+        validate: function(x) {
+          return x.length > 0;
+        },
+      })
+    );
+
+    function test(ajv) {
+      var schema = {
+        properties: {
+          prop1: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  enum: [
+                    'foo',
+                    'bar',
+                    'baz'
+                  ]
+                }
+              }
+            }
+          }
+        }
+      };
+
+      var validate = ajv.compile(schema);
+      var data = { prop1: [ { name: 'foo' }, {name: 'baz'} ] };
+
+      validate(data).should.equal(true);
+      data.should.eql({ prop1: [ { name: 'foo' }, {name: 'baz'} ] });
+      validate.validatedData.should.eql([
+        { key: 'prop1', value: [{ name: 'foo' }, {name: 'baz'}], type: 'array', items: { type: 'object', properties: { name: { type: 'string', enum: ['foo', 'bar', 'baz']}}} , dataPath: ['prop1'] },
+        { key: 'name', value: 'foo', type: 'string', enum: ['foo', 'bar', 'baz'], dataPath: ['prop1', 0, 'name'] },
+        { key: 'name', value: 'baz', type: 'string', enum: ['foo', 'bar', 'baz'], dataPath: ['prop1', 1, 'name'] }
+      ]
+      );
+
+      data = { prop1: [ { name: 'foo' }, {name: 'xpto'} ] };
+      validate(data).should.equal(false);
+    }
+  });
 });
