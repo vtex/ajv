@@ -207,7 +207,7 @@
 
 {{## def.assignData:
   if ({{=$passData}} != null) {
-    {{ var $dataPath = $it.dataPathArr.slice(1); }}
+    {{ var $dataPath = $it.dataPathArr.slice(1, $it.dataLevel + 1); }}
     var validData = {
       key: {{= JSON.stringify($propertyKey) }}, value: {{= $passData }}, dataPath: [{{= $dataPath }} ],
       ...{{= JSON.stringify($sch) }} };

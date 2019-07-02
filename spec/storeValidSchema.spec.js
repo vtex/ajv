@@ -209,4 +209,86 @@ describe('storeValidData options', function() {
       validate(data).should.equal(false);
     }
   });
+
+  it('should store clean datapath from arrays with different sizes', function() {
+    test(
+      new Ajv({ allErrors: true, useDefaults: true, useExamples: true, shouldStoreValidSchema: true })
+      .addFormat('IOMessage', {
+        type: 'string',
+        validate: function(x) {
+          return x.length > 0;
+        },
+      })
+    );
+
+    function test(ajv) {
+      var schema = {
+        properties: {
+          prop1: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                deep1: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      name: {
+                        type: 'string'
+                      }
+                    },
+                  }
+                }
+              }
+            }
+          },
+          smallerProp: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                smallerName: {
+                  type: 'string'
+                }
+              }
+            }
+          }
+        }
+      };
+
+      var validate = ajv.compile(schema);
+      var data = { prop1: [ { deep1: [{name: 'prop1Name'}] } ], smallerProp: [ {smallerName: 'smallerPropName'} ] };
+
+      validate(data).should.equal(true);
+      data.should.eql({ prop1: [ { deep1: [{name: 'prop1Name'}] } ], smallerProp: [ {smallerName: 'smallerPropName'} ] });
+      validate.validatedData.should.eql([
+        { key: 'prop1', value: [ { deep1: [{name: 'prop1Name'}] } ], type: 'array', items: {
+          type: 'object',
+          properties: {
+            deep1: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' }
+                },
+              }
+            }
+          }
+        }, dataPath: ['prop1']},
+        { key: 'deep1', value: [{name: 'prop1Name'}], type: 'array', items: { type: 'object', properties: { name: {type: 'string' } }}, dataPath: ['prop1', 0, 'deep1'] },
+        { key: 'name', value: 'prop1Name', type: 'string', dataPath: ['prop1', 0, 'deep1', 0, 'name'] },
+        {
+          key: 'smallerProp',
+          value: [ {smallerName: 'smallerPropName'} ],
+          type: 'array',
+          items: { type: 'object', properties: { smallerName: {type: 'string' } } },
+          dataPath: ['smallerProp']
+        },
+        { key: 'smallerName', value: 'smallerPropName', type: 'string', dataPath: ['smallerProp', 0, 'smallerName'] }
+      ]
+      );
+    }
+  });
 });
