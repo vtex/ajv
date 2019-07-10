@@ -95,9 +95,9 @@ describe('storeValidData options', function() {
 
       validate(data).should.equal(true);
       data.should.eql({ foo: { bar: 'abc' }});
-      validate.validatedData.should.eql([
+      validate.validatedData.sort().should.eql([
         { key: 'foo', value: {bar: 'abc'}, properties: { bar: { type: 'string', examples: ['abc'], format: 'IOMessage' } }, dataPath: ['foo'] },
-        { key: 'bar', value: 'abc', type: 'string', examples: ['abc'], format: 'IOMessage', dataPath: ['foo', 'bar'] }]);
+        { key: 'bar', value: 'abc', type: 'string', examples: ['abc'], format: 'IOMessage', dataPath: ['foo', 'bar'] }].sort());
     }
   });
 
@@ -131,7 +131,8 @@ describe('storeValidData options', function() {
                   foo: {
                     enum: ['1']
                   },
-                  baz: { type: 'string', default: 'abc', format: 'IOMessage' }
+                  baz: { type: 'string', default: 'abc', format: 'IOMessage' },
+                  bar: { type: 'string', default: 'abc', format: 'IOMessage' }
                 }
               }
             ]
@@ -150,12 +151,12 @@ describe('storeValidData options', function() {
 
       validate(data).should.equal(true);
       data.should.eql({ foo: '0', bar: 'abc' });
-      validate.validatedData.should.eql([
+      validate.validatedData.sort().should.eql([
         { key: 'foo', value: '0', enum: ['0'], dataPath: ['foo'] },
         { key: 'bar', value: 'abc', type: 'string', default: 'abc', format: 'IOMessage', dataPath: ['bar'] },
         { key: 'foo', value: '0', enum: ['1'], dataPath: ['foo'] },
         { key: 'foo', value: '0', enum: ['0', '1'], dataPath: ['foo'] },
-      ]
+      ].sort()
       );
     }
   });
