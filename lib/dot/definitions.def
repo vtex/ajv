@@ -207,14 +207,16 @@
 
 {{## def.assignData:
   if ({{=$passData}} != null) {
-    var serialize = {{= it.opts.serialize }};
     {{ var $dataPath = $it.dataPathArr.slice(1, $it.dataLevel + 1); }}
-    var validData = {
-      key: {{= it.opts.serialize($propertyKey) }}, value: {{= $passData }}, dataPath: [{{= $dataPath }} ],
-      ...{{= it.opts.serialize($sch) }} };
+    {{ var $validData = { key: $propertyKey, value: $passData, dataPath: $dataPath, ...$sch }; }}
     validate.validatedData = (validate.validatedData || []);
-    if(!validate.validatedData.some(data => serialize(data) === serialize(validData))){
+    {{ var $serializedValidData = it.opts.serialize($validData); }}
+    {{? !$it.serializedValidDataArr.some(data => data === $serializedValidData ) }}
+      var validData = {
+        key: {{= it.opts.serialize($propertyKey) }}, value: {{= $passData }}, dataPath: [{{= $dataPath }} ],
+        ...{{= it.opts.serialize($sch) }} };
       validate.validatedData.push(validData);
-    }
+      {{ $it.serializedValidDataArr.push($serializedValidData); }}
+    {{?}}
   }
 #}}

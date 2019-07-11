@@ -83,6 +83,7 @@
     delete it.isTop;
 
     it.dataPathArr = [undefined];
+    it.serializedValidDataArr = [];
 
     if (it.schema.default !== undefined && it.opts.useDefaults && it.opts.strictDefaults) {
       var $defaultMsg = 'default is ignored in the schema root';
